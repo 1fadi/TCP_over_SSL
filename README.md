@@ -22,7 +22,7 @@ typing the following command:
 
 replace *PUBLIC_IP* and *PORT* with your server's
 
-## Note
+## important notes
 * openSSL must be installed in order to do a handshake with the server.
 * be sure to create .pem file, private.key, ssl certificate to
 load certificate chain.
