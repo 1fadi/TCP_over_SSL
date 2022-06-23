@@ -1,19 +1,3 @@
-"""
-TCP over SSL server.
-
-to connect to this server 'remotely', add a port in your router/firewall
-that allows traffic forwarding from public IP to localhost (on your Host machine)
-start the server, and now you can connect (as a client) from
-a command line on any operating system by
-typing the following command:
-$ openssl s_client -connect PUBLIC_IP:PORT
-replace PUBLIC_IP and PORT with your server's.
-
-##NOTE: openSSL must be installed in order to do a handshake with the server.
-# be sure to create .pem file, private.key, ssl certificate to
-load certificate chain.
-"""
-
 import socket
 import threading
 import sys
@@ -31,6 +15,8 @@ except socket.gaierror:
     sys.exit("Host not known!")
 
 sock.listen(5)
+print("Server is listening..")
+
 ssock = context.wrap_socket(sock, server_side=True)
 
 clients = []
