@@ -5,7 +5,7 @@ an encrypted TCP chat server that uses self-signed SSL certification
 To connect to this server 'remotely', add port forwarding in your router/firewall
 that allows traffic forwarding from public IP to localhost (on your Host machine)
 
-## requirements:
+## Requirements:
 #### Modules:
 * socket
 * threading
@@ -22,7 +22,7 @@ typing the following command:
 
 replace *PUBLIC_IP* and *PORT* with your server's
 
-## important notes
+## Important notes
 * openSSL must be installed in order to do a handshake with the server.
 * be sure to create .pem file, private.key, ssl certificate to
 load certificate chain.
