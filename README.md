@@ -1,5 +1,5 @@
 # TCP_over_SSL
-an encrypted TCP chat server that uses self-signed SSL certificate
+an encrypted TCP chat server that uses self-signed SSL certification
 
 ## General Info
 To connect to this server 'remotely', add port forwarding in your router/firewall
