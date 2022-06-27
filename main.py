@@ -8,7 +8,7 @@ host, port = server = ("0.0.0.0", 62113)
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain("new.pem", "private.key")
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock = socket.socket()
 ssock = context.wrap_socket(sock, server_side=True)
 try:
     ssock.bind(server)
@@ -24,6 +24,7 @@ def cast(mode, message, nickname=None):
     if mode == "chat":
         for client in clients:
             client.send(f"{nickname.strip()}: ".encode("ascii") + message)
+
     elif mode == "broadcast":
         for client in clients:
             client.send(message)
@@ -38,7 +39,7 @@ def quit_msg(nickname, a, p):
 
 def handler(client, addr):
     while True:
-        a, p = i = addr
+        a, p = addr
         try:
             index = clients.index(client)
             nickname = nicknames[index]
@@ -51,7 +52,7 @@ def handler(client, addr):
                 nicknames.remove(nickname)
                 break
             else:
-                sleep(0.3)
+                sleep(0.1)
                 cast("chat", msg, nickname)
         except:
             index = clients.index(client)
@@ -71,10 +72,13 @@ def receive():
         except:
             continue
         print(f"Connected with {str(addr)}.")
-        client.send("Nickname: ".encode("ascii"))
-
-        nickname = client.recv(1024).decode("ascii")
+        try:
+            client.send("Nickname: ".encode("ascii"))
+            nickname = client.recv(1024).decode("ascii")
+        except:
+            continue
         while nickname in nicknames or nickname.strip() == "":
+            client.send("This nickname is already taken, choose another: ".encode("ascii"))
             nickname = client.recv(1024).decode("ascii")
         nicknames.append(nickname)
         clients.append(client)
