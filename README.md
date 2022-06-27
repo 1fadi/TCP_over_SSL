@@ -18,8 +18,9 @@ connect to this server (as a client) from
 a command line on any operating system by
 typing the following command:
 
-`$ openssl s_client -connect PUBLIC_IP:PORT`
+`$ openssl s_client -quiet -connect PUBLIC_IP:PORT`
 
+`-quiet` is a must to prevent ssl errors.
 replace *PUBLIC_IP* and *PORT* with your server's
 
 ## Important notes
