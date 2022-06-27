@@ -24,7 +24,6 @@ def cast(mode, message, nickname=None):
     if mode == "chat":
         for client in clients:
             client.send(f"{nickname.strip()}: ".encode("ascii") + message)
-
     elif mode == "broadcast":
         for client in clients:
             client.send(message)
@@ -72,7 +71,6 @@ def receive():
         except:
             continue
         print(f"Connected with {str(addr)}.")
-
         client.send("Nickname: ".encode("ascii"))
 
         nickname = client.recv(1024).decode("ascii")
