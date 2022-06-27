@@ -2,23 +2,20 @@ import socket
 import threading
 import sys
 import ssl
+from time import sleep
 
 host, port = server = ("0.0.0.0", 62113)
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain("new.pem", "private.key")
-
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ssock = context.wrap_socket(sock, server_side=True)
 try:
-    sock.bind(server)
+    ssock.bind(server)
 except socket.gaierror:
     sys.exit("Host not known!")
-
-sock.listen(5)
+ssock.listen(5)
 print("Server is listening..")
-
-ssock = context.wrap_socket(sock, server_side=True)
-
 clients = []
 nicknames = []
 
@@ -55,6 +52,7 @@ def handler(client, addr):
                 nicknames.remove(nickname)
                 break
             else:
+                sleep(0.3)
                 cast("chat", msg, nickname)
         except:
             index = clients.index(client)
@@ -69,38 +67,30 @@ def handler(client, addr):
 
 def receive():
     while True:
-        try:
-            try:  # if no handshake was made. Connection is NOT accepted.
-                client, addr = ssock.accept()
-            except:
-                continue
-            print(f"Connected with {str(addr)}.")
+        try:  # if no handshake was made. Connection is NOT accepted.
+            client, addr = ssock.accept()
+        except:
+            continue
+        print(f"Connected with {str(addr)}.")
 
-            client.send("Nickname: ".encode("ascii"))
+        client.send("Nickname: ".encode("ascii"))
 
+        nickname = client.recv(1024).decode("ascii")
+        while nickname in nicknames or nickname.strip() == "":
             nickname = client.recv(1024).decode("ascii")
-            while nickname in nicknames:
-                nickname = client.recv(1024).decode("ascii")
-            nicknames.append(nickname)
-            clients.append(client)
+        nicknames.append(nickname)
+        clients.append(client)
 
-            print(f"Nickname of the client is {nickname}")
-            client.send("Connected to the server!\n"
-                        "--------------------------------\n"
-                        "type '/quit' to exit the server.\n"
-                        "--------------------------------\n\n"
-                        .encode("ascii"))
-            cast("broadcast", f"{nickname.strip()} joined the chat!\n".encode("ascii"), nickname)
+        print(f"Nickname of the client is {nickname}")
+        client.send("Connected to the server!\n"
+                    "--------------------------------\n"
+                    "type '/quit' to exit the server.\n"
+                    "--------------------------------\n\n"
+                    .encode("ascii"))
+        cast("broadcast", f"{nickname.strip()} joined the chat!\n".encode("ascii"), nickname)
 
-            thread = threading.Thread(target=handler, args=(client, addr,))
-            thread.start()
-        except KeyboardInterrupt:
-            for client in clients:
-                try:
-                    client.close()
-                except:
-                    continue
-            break
+        thread = threading.Thread(target=handler, args=(client, addr,))
+        thread.start()
     sys.exit("Error. Server Closed.")
 
 
